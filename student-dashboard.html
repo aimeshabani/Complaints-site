@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — Student Results Complaint System</title>
+<style>
+  :root{
+    --ink:#0F3E73;        /* deep blu */
+    --ink-soft:#4A6C93;
+    --accent:#2E86DE;
+    --light:#EAF3FC;
+    --paper:#F6F9FD;
+    --line:#D7E6F7;
+    --white:#FFFFFF;
+
+    --c-submitted:#2E86DE; --c-submitted-bg:#E7F1FC;
+    --c-review:#2E86DE;    --c-review-bg:#E7F1FC;
+    --c-meeting:#5B4FCF;   --c-meeting-bg:#EDEBFB;
+    --c-dept:#0E9C8F;      --c-dept-bg:#E3F7F4;
+    --c-resolved:#1F9254;  --c-resolved-bg:#E5F6EC;
+    --c-rejected:#C0392B;  --c-rejected-bg:#FBEAE8;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    color:var(--ink);
+  }
+
+  .wrap{ max-width:1100px; margin:0 auto; padding:32px 24px 64px; }
+
+
+  .container{ max-width:1100px; margin:0 auto; padding:0 24px; }
+
+  .site-header{ background:var(--ink); }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:8px; background:var(--accent);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px; flex-shrink:0;
+  }
+  .brand strong{ display:block; font-size:13.5px; line-height:1.2; }
+  .brand small{ display:block; font-size:11px; color:#B9D4F2; font-weight:400; }
+
+  .main-nav{ display:flex; align-items:center; gap:22px; }
+  .main-nav a{
+    color:#CFE1F7; text-decoration:none; font-size:13.5px; font-weight:500;
+    padding:6px 2px; border-bottom:2px solid transparent; transition:color .12s, border-color .12s;
+  }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a.profile-link{
+    color:#fff; background:var(--accent); padding:7px 14px; border-radius:6px; border-bottom:none;
+  }
+  .main-nav a.profile-link.current{ background:#fff; color:var(--ink); }
+
+  .mobile-menu-btn{ display:none; background:none; border:none; color:#fff; font-size:20px; cursor:pointer; }
+  .mobile-nav{ display:none; }
+
+  .site-footer{ margin-top:48px; border-top:1px solid var(--line); }
+  .footer-inner{ display:flex; align-items:center; justify-content:space-between; padding:18px 24px; font-size:12.5px; color:var(--ink-soft); }
+  .footer-inner a{ color:var(--accent); text-decoration:none; font-weight:600; }
+  .footer-inner a:hover{ text-decoration:underline; }
+
+  @media(max-width:640px){
+    .main-nav{ display:none; }
+    .mobile-menu-btn{ display:block; }
+    .mobile-nav.open{ display:flex; flex-direction:column; gap:2px; background:var(--ink); padding:8px 24px 14px; }
+    .mobile-nav a{ color:#CFE1F7; text-decoration:none; font-size:13.5px; padding:8px 0; }
+    .mobile-nav a.profile-link{ color:#fff; font-weight:600; }
+    .footer-inner{ flex-direction:column; gap:6px; text-align:center; }
+  }
+
+
+  header.page-head{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding-bottom:24px; margin-bottom:28px; border-bottom:1px solid var(--line);
+  }
+  .eyebrow{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:6px; }
+  h1{ font-size:28px; margin:0; color:var(--ink); font-weight:700; font-family:Georgia, 'Times New Roman', serif; }
+  .subtext{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; }
+  .avatar{
+    width:44px; height:44px; border-radius:50%; background:var(--ink); color:var(--white);
+    display:flex; align-items:center; justify-content:center; font-weight:600; font-size:14px; flex-shrink:0;
+  }
+
+
+  .alert-banner{
+    display:flex; gap:12px; align-items:flex-start; background:var(--c-meeting-bg);
+    border:1px solid #D6D1F5; border-radius:10px; padding:14px 16px; margin-bottom:26px;
+  }
+  .alert-banner .title{ font-weight:700; color:#3B2E8C; font-size:14px; }
+  .alert-banner .desc{ font-size:13px; color:#4A3D9E; margin-top:2px; }
+  .alert-meta{ display:flex; gap:16px; margin-top:8px; font-size:12px; color:#4A3D9E; }
+  .alert-meta span{ display:flex; align-items:center; gap:4px; }
+  .alert-cta{
+    margin-left:auto; align-self:center; background:var(--c-meeting); color:#fff; border:none;
+    padding:8px 14px; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+
+
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:26px; }
+  .stat-card{ background:var(--white); border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
+  .stat-value{ font-size:30px; font-weight:700; color:var(--ink); font-family:Georgia,serif; }
+  .stat-label{ font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px; }
+
+
+  .quick-actions{ display:flex; gap:12px; margin-bottom:26px; flex-wrap:wrap; }
+  .qa-card{
+    flex:1; min-width:220px; background:var(--white); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink);
+    transition:border-color .12s, background .12s;
+  }
+  .qa-card:hover{ border-color:var(--accent); background:var(--light); }
+  .qa-icon{
+    width:38px; height:38px; border-radius:9px; background:var(--light); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .qa-title{ font-size:13.5px; font-weight:700; }
+  .qa-desc{ font-size:11.5px; color:var(--ink-soft); margin-top:1px; }
+
+
+  .section-heading{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .section-heading h2{ font-size:15px; margin:0; color:var(--ink); font-family:Georgia,serif; }
+
+
+  .controls{ display:flex; gap:12px; margin-bottom:16px; }
+  .search-box, .filter-box{
+    background:var(--white); border:1px solid var(--line); border-radius:8px;
+    display:flex; align-items:center; gap:8px; padding:9px 12px;
+  }
+  .search-box{ flex:1; }
+  .search-box input{ border:none; outline:none; width:100%; font-size:13.5px; background:transparent; color:var(--ink); }
+  .filter-box select{ border:none; outline:none; font-size:13.5px; background:transparent; color:var(--ink); }
+  .icon{ width:15px; height:15px; stroke:var(--ink-soft); flex-shrink:0; }
+
+
+  .complaint-list{ display:flex; flex-direction:column; gap:10px; }
+  .complaint-card{
+    background:var(--white); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; cursor:pointer; transition:border-color .12s, box-shadow .12s;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .complaint-card:hover{ border-color:var(--accent); box-shadow:0 2px 10px rgba(15,62,115,.06); }
+  .cc-main{ display:flex; flex-direction:column; gap:4px; min-width:220px; }
+  .cc-id{ font-family:'Courier New', monospace; font-size:11.5px; color:var(--ink-soft); }
+  .cc-title{ font-size:14.5px; font-weight:700; color:var(--ink); }
+  .cc-sub{ font-size:12.5px; color:var(--ink-soft); }
+  .cc-right{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .cc-date{ font-size:12px; color:var(--ink-soft); min-width:56px; text-align:right; }
+  .empty-state{ text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:13.5px; }
+
+
+  .rail{ display:flex; align-items:center; gap:3px; }
+  .rail .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .rail .seg{ width:16px; height:1px; background:var(--line); flex-shrink:0; }
+
+
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:600; white-space:nowrap; }
+  .pill .dot{ width:6px; height:6px; border-radius:50%; }
+
+
+  .overlay{ position:fixed; inset:0; background:rgba(15,62,115,.45); display:none; align-items:center; justify-content:center; padding:20px; z-index:50; }
+  .overlay.open{ display:flex; }
+  .modal{ background:var(--white); border-radius:12px; width:100%; max-width:640px; max-height:88vh; overflow-y:auto; }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--white); z-index:2; }
+  .modal-head h2{ font-size:20px; margin:4px 0 0; font-family:Georgia,serif; color:var(--ink); }
+  .close-btn{ border:none; background:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--ink-soft); }
+  .close-btn:hover{ background:var(--light); }
+  .modal-body{ padding:20px 24px 26px; display:flex; flex-direction:column; gap:22px; }
+
+  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; font-size:13.5px; }
+  .field-label{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:2px;}
+  .field-value{ color:var(--ink); font-weight:500; }
+
+  .section-label{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; }
+  .complaint-type{ color:var(--accent); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+  .complaint-desc{ font-size:14px; line-height:1.6; color:var(--ink); }
+
+  .evidence-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .evidence-chip{ display:flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:6px; padding:6px 10px; font-size:12px; color:var(--ink-soft); }
+
+  .timeline-row{ display:flex; gap:12px; }
+  .tl-marker{ display:flex; flex-direction:column; align-items:center; }
+  .tl-dot{ width:11px; height:11px; border-radius:50%; margin-top:2px; }
+  .tl-line{ width:1px; flex:1; background:var(--line); min-height:22px; margin-top:2px; }
+  .tl-content{ padding-bottom:16px; }
+  .tl-status{ font-size:13.5px; font-weight:600; color:var(--ink); }
+  .tl-meta{ font-size:11.5px; color:var(--ink-soft); margin-top:1px; }
+
+  .appointment-banner{ display:flex; gap:10px; align-items:flex-start; background:var(--c-meeting-bg); border:1px solid #D6D1F5; border-radius:8px; padding:12px 14px; }
+  .appointment-banner .title{ font-weight:600; color:#3B2E8C; font-size:13.5px; }
+  .appointment-meta{ display:flex; gap:14px; margin-top:4px; font-size:11.5px; color:#4A3D9E; }
+  .appointment-meta span{ display:flex; align-items:center; gap:4px; }
+
+  .track-link{
+    display:inline-flex; align-items:center; gap:6px; margin-top:4px; font-size:12.5px;
+    color:var(--accent); text-decoration:none; font-weight:600;
+  }
+
+  @media(max-width:640px){
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .field-grid{ grid-template-columns:1fr; }
+    .quick-actions{ flex-direction:column; }
+    .cc-right{ width:100%; justify-content:space-between; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand" aria-label="Go to landing page">
+      <span class="brand-mark">SR</span>
+      <span>
+        <strong>Student Results</strong>
+        <small>Complaint System</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="complaints.html#submit">Submit Complaint</a>
+      <a href="complaints.html#track">Track Complaint</a>
+      <a href="student-dashboard.html" class="profile-link current">My Dashboard</a>
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Open navigation" aria-expanded="false">
+      &#9776;
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="complaints.html#submit">Submit Complaint</a>
+    <a href="complaints.html#track">Track Complaint</a>
+    <a href="student-dashboard.html" class="profile-link">My Dashboard</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <header class="page-head">
+    <div>
+      <div class="eyebrow">Biomedical Engineering &middot; 300 Level</div>
+      <h1>My Dashboard</h1>
+      <div class="subtext">Welcome back, John Doe — track the progress of every complaint you've submitted</div>
+    </div>
+    <div class="avatar">JD</div>
+  </header>
+
+  <div id="alertArea"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="quick-actions">
+    <a href="complaints.html#submit" class="qa-card">
+      <span class="qa-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span>
+        <span class="qa-title" style="display:block">Submit a New Complaint</span>
+        <span class="qa-desc">Report a problem with a result</span>
+      </span>
+    </a>
+    <a href="complaints.html#track" class="qa-card">
+      <span class="qa-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
+      <span>
+        <span class="qa-title" style="display:block">Track by Complaint ID</span>
+        <span class="qa-desc">Look up any complaint's status</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="section-heading">
+    <h2>My Complaints</h2>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search by complaint ID or course">
+    </div>
+    <div class="filter-box">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      <select id="filterSelect"></select>
+    </div>
+  </div>
+
+  <div class="complaint-list" id="complaintList"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; 2026 Student Results Complaint System</p>
+    <a href="complaints.html#submit">Submit a New Complaint</a>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const STAGES = ["Submitted", "Under Review", "Awaiting HOD", "Resolved"];
+
+const STATUS_META = {
+  "Submitted":                  { color:"var(--c-submitted)", bg:"var(--c-submitted-bg)", stage:0 },
+  "Under Review":               { color:"var(--c-review)",   bg:"var(--c-review-bg)",   stage:1 },
+  "Requires HOD Meeting":       { color:"var(--c-meeting)",  bg:"var(--c-meeting-bg)",  stage:2 },
+  "Requires Department Action": { color:"var(--c-dept)",     bg:"var(--c-dept-bg)",     stage:2 },
+  "Resolved":                   { color:"var(--c-resolved)", bg:"var(--c-resolved-bg)", stage:3 },
+  "Rejected":                   { color:"var(--c-rejected)", bg:"var(--c-rejected-bg)", stage:3 },
+};
+
+// Mock data — this student's own complaints (would come from a session-scoped API call)
+let complaints = [
+  {
+    id:"BME-2026-00452", studentId:"BME/2023/00452",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"300 Level",
+    course:"Biomedical Instrumentation", type:"Wrong Mark", date:"Aug 10",
+    status:"Under Review",
+    description:"The mark displayed on the student portal (58) is different from the mark recorded on the physical examination result sheet handed back in class (68). Requesting a re-check against the marked script.",
+    evidence:["result_sheet.pdf","portal_screenshot.png"],
+    history:[
+      {status:"Submitted", time:"10 Aug, 10:32 AM", by:"System"},
+      {status:"Under Review", time:"10 Aug, 11:15 AM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+  {
+    id:"BME-2026-00447", studentId:"BME/2023/00452",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"300 Level",
+    course:"Anatomy", type:"Missing Result", date:"Aug 6",
+    status:"Requires HOD Meeting",
+    description:"No mark has appeared on the portal for the end-of-semester Anatomy practical, though the exam was sat and attendance was confirmed by the invigilator.",
+    evidence:["attendance_slip.pdf"],
+    history:[
+      {status:"Submitted", time:"6 Aug, 09:02 AM", by:"System"},
+      {status:"Under Review", time:"6 Aug, 09:40 AM", by:"Dr. Nakato"},
+      {status:"Requires HOD Meeting", time:"6 Aug, 02:15 PM", by:"Dr. Nakato"},
+    ],
+    appointment:{ date:"12 Aug 2026", time:"10:30 AM", location:"HOD Office" },
+  },
+  {
+    id:"BME-2026-00431", studentId:"BME/2023/00452",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"300 Level",
+    course:"Mathematics", type:"Wrong Grade", date:"Jul 29",
+    status:"Resolved",
+    description:"Coursework mark of 74% was correctly recorded but the final letter grade shown was a C instead of a B. Requesting grade recalculation.",
+    evidence:["coursework_breakdown.pdf"],
+    history:[
+      {status:"Submitted", time:"29 Jul, 08:10 AM", by:"System"},
+      {status:"Under Review", time:"29 Jul, 09:00 AM", by:"Dr. Nakato"},
+      {status:"Resolved", time:"29 Jul, 04:20 PM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+  {
+    id:"BME-2026-00408", studentId:"BME/2023/00452",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"200 Level",
+    course:"Circuit Theory", type:"Missing Course", date:"Jul 18",
+    status:"Rejected",
+    description:"Believed Circuit Theory should appear on the transcript for the previous semester, but registration records show it was not completed that term.",
+    evidence:[],
+    history:[
+      {status:"Submitted", time:"18 Jul, 01:12 PM", by:"System"},
+      {status:"Under Review", time:"18 Jul, 03:30 PM", by:"Dr. Nakato"},
+      {status:"Rejected", time:"19 Jul, 10:00 AM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+];
+
+let query = "";
+let filterVal = "All";
+let selectedId = null;
+
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderAlert(){
+  const area = document.getElementById('alertArea');
+  const withMeeting = complaints.find(c => c.status === "Requires HOD Meeting" && c.appointment);
+  if(!withMeeting){ area.innerHTML = ''; return; }
+  area.innerHTML = `
+    <div class="alert-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--c-meeting)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px;margin-top:2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <div>
+        <div class="title">You have an upcoming HOD meeting</div>
+        <div class="desc">Regarding complaint ${esc(withMeeting.id)} — ${esc(withMeeting.course)}</div>
+        <div class="alert-meta">
+          <span>${esc(withMeeting.appointment.time)}, ${esc(withMeeting.appointment.date)}</span>
+          <span>${esc(withMeeting.appointment.location)}</span>
+        </div>
+      </div>
+      <button class="alert-cta" onclick="openComplaint('${withMeeting.id}')">View details</button>
+    </div>`;
+}
+
+function renderStats(){
+  const total = complaints.length;
+  const inProgress = complaints.filter(c => ["Submitted","Under Review","Requires Department Action"].includes(c.status)).length;
+  const awaitingMeeting = complaints.filter(c => c.status === "Requires HOD Meeting").length;
+  const resolved = complaints.filter(c => c.status === "Resolved").length;
+  const items = [["My Complaints",total],["In Progress",inProgress],["Awaiting Meeting",awaitingMeeting],["Resolved",resolved]];
+  document.getElementById('stats').innerHTML = items.map(([label,val]) => `
+    <div class="stat-card">
+      <div class="stat-value">${val}</div>
+      <div class="stat-label">${label}</div>
+    </div>`).join('');
+}
+
+function renderFilterOptions(){
+  const sel = document.getElementById('filterSelect');
+  const opts = ["All", ...Object.keys(STATUS_META)];
+  sel.innerHTML = opts.map(o => `<option value="${o}" ${o===filterVal?'selected':''}>${o}</option>`).join('');
+}
+
+function stageRail(status){
+  const meta = STATUS_META[status];
+  const activeStage = meta ? meta.stage : 0;
+  let html = '';
+  STAGES.forEach((s,i) => {
+    const filled = i <= activeStage;
+    const dotColor = filled ? (meta ? meta.color : 'var(--ink)') : 'var(--line)';
+    html += `<span class="dot" style="background:${dotColor}"></span>`;
+    if(i < STAGES.length-1){
+      const segColor = i < activeStage ? (meta ? meta.color : 'var(--ink)') : 'var(--line)';
+      html += `<span class="seg" style="background:${segColor}"></span>`;
+    }
+  });
+  return `<div class="rail">${html}</div>`;
+}
+
+function statusPill(status){
+  const meta = STATUS_META[status] || {color:'var(--ink)', bg:'#eee'};
+  return `<span class="pill" style="color:${meta.color};background:${meta.bg}">
+            <span class="dot" style="background:${meta.color}"></span>${status}
+          </span>`;
+}
+
+function renderList(){
+  const q = query.trim().toLowerCase();
+  const filtered = complaints.filter(c => {
+    const matchesQuery = q==="" || c.id.toLowerCase().includes(q) || c.course.toLowerCase().includes(q);
+    const matchesFilter = filterVal==="All" || c.status===filterVal;
+    return matchesQuery && matchesFilter;
+  });
+
+  const list = document.getElementById('complaintList');
+  if(filtered.length===0){
+    list.innerHTML = `<div class="empty-state">No complaints match this search.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(c => `
+    <div class="complaint-card" data-id="${c.id}">
+      <div class="cc-main">
+        <span class="cc-id">${esc(c.id)}</span>
+        <span class="cc-title">${esc(c.course)}</span>
+        <span class="cc-sub">${esc(c.type)}</span>
+      </div>
+      <div class="cc-right">
+        ${stageRail(c.status)}
+        ${statusPill(c.status)}
+        <span class="cc-date">${esc(c.date)}</span>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    </div>`).join('');
+
+  list.querySelectorAll('.complaint-card').forEach(card => {
+    card.addEventListener('click', () => openComplaint(card.getAttribute('data-id')));
+  });
+}
+
+function timelineHTML(history){
+  return history.map((h,i) => {
+    const meta = STATUS_META[h.status];
+    const dotColor = meta ? meta.color : 'var(--ink)';
+    const isLast = i === history.length-1;
+    return `
+      <div class="timeline-row">
+        <div class="tl-marker">
+          <div class="tl-dot" style="background:${dotColor}"></div>
+          ${!isLast ? '<div class="tl-line"></div>' : ''}
+        </div>
+        <div class="tl-content">
+          <div class="tl-status">${esc(h.status)}</div>
+          <div class="tl-meta">${esc(h.time)} &middot; ${esc(h.by)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openComplaint(id){
+  selectedId = id;
+  renderModal();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  selectedId = null;
+}
+window.openComplaint = openComplaint;
+
+function renderModal(){
+  const c = complaints.find(x => x.id===selectedId);
+  if(!c) return;
+  const modal = document.getElementById('modal');
+
+  const fields = [
+    ["Faculty", c.faculty], ["Department", c.department],
+    ["Level", c.level], ["Course", c.course],
+  ];
+
+  const evidenceHTML = c.evidence.length ? `
+    <div>
+      <div class="section-label">Your Evidence</div>
+      <div class="evidence-list">
+        ${c.evidence.map(f => `
+          <div class="evidence-chip">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            ${esc(f)}
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const appointmentHTML = c.appointment ? `
+    <div class="appointment-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--c-meeting)" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;margin-top:2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <div>
+        <div class="title">HOD meeting scheduled</div>
+        <div class="appointment-meta">
+          <span>${esc(c.appointment.time)}, ${esc(c.appointment.date)}</span>
+          <span>${esc(c.appointment.location)}</span>
+        </div>
+      </div>
+    </div>` : '';
+
+  modal.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">Complaint</div>
+        <h2>${esc(c.id)}</h2>
+      </div>
+      <button class="close-btn" id="closeBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-grid">
+        ${fields.map(([label,val]) => `
+          <div>
+            <div class="field-label">${label}</div>
+            <div class="field-value">${esc(val)}</div>
+          </div>`).join('')}
+      </div>
+
+      <div>
+        <div class="complaint-type">${esc(c.type)}</div>
+        <p class="complaint-desc">${esc(c.description)}</p>
+      </div>
+
+      ${evidenceHTML}
+
+      <div>
+        <div class="section-label">Progress</div>
+        ${timelineHTML(c.history)}
+      </div>
+
+      ${appointmentHTML}
+    </div>
+  `;
+
+  document.getElementById('closeBtn').addEventListener('click', closeModal);
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  query = e.target.value;
+  renderList();
+});
+document.getElementById('filterSelect').addEventListener('change', (e) => {
+  filterVal = e.target.value;
+  renderList();
+});
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if(e.target.id==='overlay') closeModal();
+});
+
+renderFilterOptions();
+renderAlert();
+renderStats();
+renderList();
+
+// Mobile nav toggle (mirrors shared header behavior)
+const mobileBtn = document.getElementById('mobileMenuBtn');
+const mobileNav = document.getElementById('mobileNav');
+if(mobileBtn && mobileNav){
+  mobileBtn.addEventListener('click', () => {
+    const isOpen = mobileNav.classList.toggle('open');
+    mobileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+}
+</script>
+</body>
+</html>

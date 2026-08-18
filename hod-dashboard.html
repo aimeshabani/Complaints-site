@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOD Dashboard — Student Results Complaint System</title>
+<style>
+  :root{
+    --ink:#0F3E73;
+    --ink-soft:#4A6C93;
+    --accent:#2E86DE;
+    --light:#EAF3FC;
+    --paper:#F6F9FD;
+    --line:#D7E6F7;
+    --white:#FFFFFF;
+
+    --c-review:#2E86DE;    --c-review-bg:#E7F1FC;
+    --c-meeting:#5B4FCF;   --c-meeting-bg:#EDEBFB;
+    --c-dept:#0E9C8F;      --c-dept-bg:#E3F7F4;
+    --c-resolved:#1F9254;  --c-resolved-bg:#E5F6EC;
+    --c-rejected:#C0392B;  --c-rejected-bg:#FBEAE8;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    color:var(--ink);
+  }
+  .serif{ font-family: Georgia, 'Times New Roman', serif; }
+
+  .wrap{ max-width:1100px; margin:0 auto; padding:32px 24px 64px; }
+
+
+  header.page-head{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding-bottom:24px; margin-bottom:28px; border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); font-weight:600; margin-bottom:6px;
+  }
+  h1{ font-size:28px; margin:0; color:var(--ink); font-weight:700; }
+  .subtext{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; }
+  .avatar{
+    width:44px; height:44px; border-radius:50%;
+    background:var(--ink); color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:14px; flex-shrink:0;
+  }
+
+
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:26px; }
+  .stat-card{
+    background:var(--white); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px;
+  }
+  .stat-value{ font-size:30px; font-weight:700; color:var(--ink); font-family:Georgia,serif; }
+  .stat-label{ font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px; }
+
+
+  .controls{ display:flex; gap:12px; margin-bottom:16px; }
+  .search-box, .filter-box{
+    background:var(--white); border:1px solid var(--line); border-radius:8px;
+    display:flex; align-items:center; gap:8px; padding:9px 12px;
+  }
+  .search-box{ flex:1; }
+  .search-box input{
+    border:none; outline:none; width:100%; font-size:13.5px; background:transparent; color:var(--ink);
+  }
+  .filter-box select{
+    border:none; outline:none; font-size:13.5px; background:transparent; color:var(--ink);
+  }
+  .icon{ width:15px; height:15px; stroke:var(--ink-soft); flex-shrink:0; }
+
+
+  .table-card{
+    background:var(--white); border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  thead tr{ background:var(--light); border-bottom:1px solid var(--line); }
+  th{
+    text-align:left; padding:12px 14px; font-weight:600;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  tbody tr{ border-bottom:1px solid var(--line); cursor:pointer; transition:background .12s; }
+  tbody tr:last-child{ border-bottom:none; }
+  tbody tr:hover{ background:var(--light); }
+  td{ padding:12px 14px; color:var(--ink-soft); vertical-align:middle; }
+  td.student{ color:var(--ink); font-weight:600; }
+  td.mono{ font-family:'Courier New', monospace; font-size:12px; }
+  td.chev{ text-align:right; }
+  .empty-row td{ text-align:center; padding:40px; color:var(--ink-soft); }
+
+
+  .rail{ display:flex; align-items:center; gap:3px; }
+  .rail .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .rail .seg{ width:16px; height:1px; background:var(--line); flex-shrink:0; }
+
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px;
+    border-radius:999px; font-size:11.5px; font-weight:600; white-space:nowrap;
+  }
+  .pill .dot{ width:6px; height:6px; border-radius:50%; }
+
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(15,62,115,.45);
+    display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:var(--white); border-radius:12px; width:100%; max-width:640px;
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding:20px 24px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:var(--white); z-index:2;
+  }
+  .modal-head h2{ font-size:20px; margin:4px 0 0; font-family:Georgia,serif; color:var(--ink); }
+  .close-btn{
+    border:none; background:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--ink-soft);
+  }
+  .close-btn:hover{ background:var(--light); }
+  .modal-body{ padding:20px 24px 26px; display:flex; flex-direction:column; gap:22px; }
+
+  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; font-size:13.5px; }
+  .field-label{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:2px;}
+  .field-value{ color:var(--ink); font-weight:500; }
+
+  .section-label{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; }
+  .complaint-type{ color:var(--accent); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+  .complaint-desc{ font-size:14px; line-height:1.6; color:var(--ink); }
+
+  .evidence-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .evidence-chip{
+    display:flex; align-items:center; gap:6px; border:1px solid var(--line);
+    border-radius:6px; padding:6px 10px; font-size:12px; color:var(--ink-soft);
+  }
+
+
+  .timeline-row{ display:flex; gap:12px; }
+  .tl-marker{ display:flex; flex-direction:column; align-items:center; }
+  .tl-dot{ width:11px; height:11px; border-radius:50%; margin-top:2px; }
+  .tl-line{ width:1px; flex:1; background:var(--line); min-height:22px; margin-top:2px; }
+  .tl-content{ padding-bottom:16px; }
+  .tl-status{ font-size:13.5px; font-weight:600; color:var(--ink); }
+  .tl-meta{ font-size:11.5px; color:var(--ink-soft); margin-top:1px; }
+
+
+  .appointment-banner{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--c-meeting-bg); border:1px solid #D6D1F5; border-radius:8px; padding:12px 14px;
+  }
+  .appointment-banner .title{ font-weight:600; color:#3B2E8C; font-size:13.5px; }
+  .appointment-meta{ display:flex; gap:14px; margin-top:4px; font-size:11.5px; color:#4A3D9E; }
+  .appointment-meta span{ display:flex; align-items:center; gap:4px; }
+
+
+  .status-options{ display:flex; flex-wrap:wrap; gap:8px; }
+  .status-btn{
+    border-radius:999px; padding:7px 13px; font-size:12px; font-weight:600;
+    cursor:pointer; background:var(--white); transition:all .12s;
+  }
+
+
+  .scheduler{
+    margin-top:14px; border:1px solid var(--line); border-radius:8px; padding:14px; background:var(--light);
+  }
+  .scheduler-note{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--ink); margin-bottom:10px; }
+  .slot-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .slot-day{ font-size:12px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .slot-btn{
+    display:block; width:100%; text-align:left; font-size:12px; padding:7px 10px;
+    border-radius:6px; border:1px solid var(--line); background:var(--white); color:var(--ink-soft);
+    cursor:pointer; margin-bottom:6px;
+  }
+  .slot-btn.chosen{ border-color:var(--c-meeting); background:var(--c-meeting-bg); color:var(--c-meeting); font-weight:600; }
+
+  .confirm-btn{
+    margin-top:14px; width:100%; padding:11px; border:none; border-radius:8px;
+    background:var(--ink); color:var(--white); font-size:13.5px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .confirm-btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  @media(max-width:640px){
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .field-grid{ grid-template-columns:1fr; }
+    table{ display:block; overflow-x:auto; }
+  }
+
+
+  .container{ max-width:1100px; margin:0 auto; padding:0 24px; }
+
+  .site-header{ background:var(--ink); }
+  .header-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+  .brand-mark{
+    width:34px; height:34px; border-radius:8px; background:var(--accent);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px; flex-shrink:0;
+  }
+  .brand strong{ display:block; font-size:13.5px; line-height:1.2; }
+  .brand small{ display:block; font-size:11px; color:#B9D4F2; font-weight:400; }
+
+  .main-nav{ display:flex; align-items:center; gap:22px; }
+  .main-nav a{
+    color:#CFE1F7; text-decoration:none; font-size:13.5px; font-weight:500;
+    padding:6px 2px; border-bottom:2px solid transparent; transition:color .12s, border-color .12s;
+  }
+  .main-nav a:hover{ color:#fff; }
+  .main-nav a.hod-link{
+    color:#fff; background:var(--accent); padding:7px 14px; border-radius:6px; border-bottom:none;
+  }
+  .main-nav a.hod-link.current{ background:#fff; color:var(--ink); }
+
+  .mobile-menu-btn{
+    display:none; background:none; border:none; color:#fff; font-size:20px; cursor:pointer;
+  }
+  .mobile-nav{ display:none; }
+
+  .site-footer{ margin-top:48px; border-top:1px solid var(--line); }
+  .footer-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px; font-size:12.5px; color:var(--ink-soft);
+  }
+  .footer-inner a{ color:var(--accent); text-decoration:none; font-weight:600; }
+  .footer-inner a:hover{ text-decoration:underline; }
+
+  @media(max-width:640px){
+    .main-nav{ display:none; }
+    .mobile-menu-btn{ display:block; }
+    .mobile-nav.open{
+      display:flex; flex-direction:column; gap:2px; background:var(--ink); padding:8px 24px 14px;
+    }
+    .mobile-nav a{ color:#CFE1F7; text-decoration:none; font-size:13.5px; padding:8px 0; }
+    .mobile-nav a.hod-link{ color:#fff; font-weight:600; }
+    .footer-inner{ flex-direction:column; gap:6px; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand" aria-label="Go to landing page">
+      <span class="brand-mark">SR</span>
+      <span>
+        <strong>Student Results</strong>
+        <small>Complaint System</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="complaints.html#submit">Submit Complaint</a>
+      <a href="complaints.html#track">Track Complaint</a>
+      <a href="hod-dashboard.html" class="hod-link current">HOD Dashboard</a>
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button"
+            aria-label="Open navigation" aria-expanded="false">
+      &#9776;
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="complaints.html#submit">Submit Complaint</a>
+    <a href="complaints.html#track">Track Complaint</a>
+    <a href="hod-dashboard.html" class="hod-link">HOD Dashboard</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <header class="page-head">
+    <div>
+      <div class="eyebrow">Office of the Registrar &middot; Biomedical Engineering</div>
+      <h1>HOD Dashboard</h1>
+      <div class="subtext">Results complaints for review, under Dr. Nakato</div>
+    </div>
+    <div class="avatar">DN</div>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="search-box">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search by student, complaint ID, or course">
+    </div>
+    <div class="filter-box">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      <select id="filterSelect"></select>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th><th>Complaint ID</th><th>Course</th><th>Type</th>
+          <th>Progress</th><th>Date</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; 2026 Student Results Complaint System</p>
+    <a href="complaints.html">Back to Submit / Track Complaint</a>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const STAGES = ["Submitted", "Under Review", "Awaiting HOD", "Resolved"];
+
+const STATUS_META = {
+  "Under Review":               { color:"var(--c-review)",   bg:"var(--c-review-bg)",   stage:1 },
+  "Requires HOD Meeting":       { color:"var(--c-meeting)",  bg:"var(--c-meeting-bg)",  stage:2 },
+  "Requires Department Action": { color:"var(--c-dept)",     bg:"var(--c-dept-bg)",     stage:2 },
+  "Resolved":                   { color:"var(--c-resolved)", bg:"var(--c-resolved-bg)", stage:3 },
+  "Rejected":                   { color:"var(--c-rejected)", bg:"var(--c-rejected-bg)", stage:3 },
+};
+
+const SLOTS = {
+  "Monday": ["10:00 AM", "10:30 AM", "11:00 AM"],
+  "Tuesday": ["2:00 PM", "2:30 PM", "3:00 PM"],
+};
+
+let complaints = [
+  {
+    id:"BME-2026-00452", student:"John Doe", studentId:"BME/2023/00452",
+    email:"john.doe@uni.ac.ug", phone:"+256 700 112 233",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"300 Level",
+    course:"Biomedical Instrumentation", type:"Wrong Mark", date:"Aug 10",
+    status:"Under Review",
+    description:"The mark displayed on the student portal (58) is different from the mark recorded on the physical examination result sheet handed back in class (68). Requesting a re-check against the marked script.",
+    evidence:["result_sheet.pdf","portal_screenshot.png"],
+    history:[
+      {status:"Submitted", time:"10 Aug, 10:32 AM", by:"System"},
+      {status:"Under Review", time:"10 Aug, 11:15 AM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+  {
+    id:"BME-2026-00453", student:"Sarah A.", studentId:"BME/2023/00453",
+    email:"sarah.a@uni.ac.ug", phone:"+256 700 445 566",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"200 Level",
+    course:"Anatomy", type:"Missing Result", date:"Aug 10",
+    status:"Requires HOD Meeting",
+    description:"No mark has appeared on the portal for the end-of-semester Anatomy practical, though the exam was sat and attendance was confirmed by the invigilator.",
+    evidence:["attendance_slip.pdf"],
+    history:[
+      {status:"Submitted", time:"10 Aug, 09:02 AM", by:"System"},
+      {status:"Under Review", time:"10 Aug, 09:40 AM", by:"Dr. Nakato"},
+      {status:"Requires HOD Meeting", time:"10 Aug, 02:15 PM", by:"Dr. Nakato"},
+    ],
+    appointment:{ date:"12 Aug 2026", time:"10:30 AM", location:"HOD Office" },
+  },
+  {
+    id:"BME-2026-00454", student:"Peter K.", studentId:"BME/2023/00454",
+    email:"peter.k@uni.ac.ug", phone:"+256 700 778 899",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"300 Level",
+    course:"Mathematics", type:"Wrong Grade", date:"Aug 9",
+    status:"Resolved",
+    description:"Coursework mark of 74% was correctly recorded but the final letter grade shown was a C instead of a B. Requesting grade recalculation.",
+    evidence:["coursework_breakdown.pdf"],
+    history:[
+      {status:"Submitted", time:"9 Aug, 08:10 AM", by:"System"},
+      {status:"Under Review", time:"9 Aug, 09:00 AM", by:"Dr. Nakato"},
+      {status:"Resolved", time:"9 Aug, 04:20 PM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+  {
+    id:"BME-2026-00455", student:"Grace M.", studentId:"BME/2024/00455",
+    email:"grace.m@uni.ac.ug", phone:"+256 700 990 011",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"200 Level",
+    course:"Circuit Theory", type:"Missing Course", date:"Aug 8",
+    status:"Requires Department Action",
+    description:"Circuit Theory does not appear at all on the transcript, despite having registered and completed all coursework and the final exam.",
+    evidence:["registration_receipt.pdf","coursework_scores.png"],
+    history:[
+      {status:"Submitted", time:"8 Aug, 01:12 PM", by:"System"},
+      {status:"Under Review", time:"8 Aug, 03:30 PM", by:"Dr. Nakato"},
+      {status:"Requires Department Action", time:"9 Aug, 10:00 AM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+  {
+    id:"BME-2026-00456", student:"Emmanuel O.", studentId:"BME/2023/00456",
+    email:"emmanuel.o@uni.ac.ug", phone:"+256 700 223 344",
+    faculty:"Faculty of Engineering", department:"Biomedical Engineering", level:"400 Level",
+    course:"Medical Imaging Systems", type:"Result Not Updated", date:"Aug 8",
+    status:"Rejected",
+    description:"Believed a supplementary exam retake should have replaced the original failing mark on the transcript.",
+    evidence:[],
+    history:[
+      {status:"Submitted", time:"8 Aug, 09:45 AM", by:"System"},
+      {status:"Under Review", time:"8 Aug, 11:00 AM", by:"Dr. Nakato"},
+      {status:"Rejected", time:"8 Aug, 05:40 PM", by:"Dr. Nakato"},
+    ],
+    appointment:null,
+  },
+];
+
+let query = "";
+let filterVal = "All";
+let selectedId = null;
+let pendingStatus = null;
+let showScheduler = false;
+let chosenSlot = null;
+
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderStats(){
+  const total = complaints.length;
+  const isNew = complaints.filter(c => c.status==="Under Review" && c.history.length<=2).length;
+  const underReview = complaints.filter(c => ["Under Review","Requires HOD Meeting","Requires Department Action"].includes(c.status)).length;
+  const resolved = complaints.filter(c => c.status==="Resolved").length;
+  const items = [["Total",total],["New",isNew],["Under Review",underReview],["Resolved",resolved]];
+  document.getElementById('stats').innerHTML = items.map(([label,val]) => `
+    <div class="stat-card">
+      <div class="stat-value">${val}</div>
+      <div class="stat-label">${label}</div>
+    </div>`).join('');
+}
+
+function renderFilterOptions(){
+  const sel = document.getElementById('filterSelect');
+  const opts = ["All", ...Object.keys(STATUS_META)];
+  sel.innerHTML = opts.map(o => `<option value="${o}" ${o===filterVal?'selected':''}>${o}</option>`).join('');
+}
+
+function stageRail(status){
+  const meta = STATUS_META[status];
+  const activeStage = meta ? meta.stage : 0;
+  let html = '';
+  STAGES.forEach((s,i) => {
+    const filled = i <= activeStage;
+    const dotColor = filled ? (meta ? meta.color : 'var(--ink)') : 'var(--line)';
+    html += `<span class="dot" style="background:${dotColor}"></span>`;
+    if(i < STAGES.length-1){
+      const segColor = i < activeStage ? (meta ? meta.color : 'var(--ink)') : 'var(--line)';
+      html += `<span class="seg" style="background:${segColor}"></span>`;
+    }
+  });
+  return `<div class="rail">${html}</div>`;
+}
+
+function statusPill(status){
+  const meta = STATUS_META[status] || {color:'var(--ink)', bg:'#eee'};
+  return `<span class="pill" style="color:${meta.color};background:${meta.bg}">
+            <span class="dot" style="background:${meta.color}"></span>${status}
+          </span>`;
+}
+
+function renderTable(){
+  const q = query.trim().toLowerCase();
+  const filtered = complaints.filter(c => {
+    const matchesQuery = q==="" || c.student.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.course.toLowerCase().includes(q);
+    const matchesFilter = filterVal==="All" || c.status===filterVal;
+    return matchesQuery && matchesFilter;
+  });
+
+  const body = document.getElementById('tableBody');
+  if(filtered.length===0){
+    body.innerHTML = `<tr class="empty-row"><td colspan="8">No complaints match this search.</td></tr>`;
+    return;
+  }
+  body.innerHTML = filtered.map(c => `
+    <tr data-id="${c.id}">
+      <td class="student">${esc(c.student)}</td>
+      <td class="mono">${esc(c.id)}</td>
+      <td>${esc(c.course)}</td>
+      <td>${esc(c.type)}</td>
+      <td>${stageRail(c.status)}</td>
+      <td>${esc(c.date)}</td>
+      <td>${statusPill(c.status)}</td>
+      <td class="chev">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+      </td>
+    </tr>`).join('');
+
+  body.querySelectorAll('tr[data-id]').forEach(row => {
+    row.addEventListener('click', () => openComplaint(row.getAttribute('data-id')));
+  });
+}
+
+function openComplaint(id){
+  selectedId = id;
+  pendingStatus = null;
+  showScheduler = false;
+  chosenSlot = null;
+  renderModal();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  selectedId = null;
+}
+
+function timelineHTML(history){
+  return history.map((h,i) => {
+    const meta = STATUS_META[h.status];
+    const dotColor = meta ? meta.color : 'var(--ink)';
+    const isLast = i === history.length-1;
+    return `
+      <div class="timeline-row">
+        <div class="tl-marker">
+          <div class="tl-dot" style="background:${dotColor}"></div>
+          ${!isLast ? '<div class="tl-line"></div>' : ''}
+        </div>
+        <div class="tl-content">
+          <div class="tl-status">${esc(h.status)}</div>
+          <div class="tl-meta">${esc(h.time)} &middot; ${esc(h.by)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderModal(){
+  const c = complaints.find(x => x.id===selectedId);
+  if(!c) return;
+  const modal = document.getElementById('modal');
+
+  const fields = [
+    ["Student", c.student], ["Student ID", c.studentId],
+    ["Faculty", c.faculty], ["Department", c.department],
+    ["Level", c.level], ["Course", c.course],
+  ];
+
+  const evidenceHTML = c.evidence.length ? `
+    <div>
+      <div class="section-label">Evidence</div>
+      <div class="evidence-list">
+        ${c.evidence.map(f => `
+          <div class="evidence-chip">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            ${esc(f)}
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const appointmentHTML = c.appointment ? `
+    <div class="appointment-banner">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--c-meeting)" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;margin-top:2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <div>
+        <div class="title">HOD meeting scheduled</div>
+        <div class="appointment-meta">
+          <span>${esc(c.appointment.time)}, ${esc(c.appointment.date)}</span>
+          <span>${esc(c.appointment.location)}</span>
+        </div>
+      </div>
+    </div>` : '';
+
+  const statusOptionsHTML = Object.keys(STATUS_META).map(s => {
+    const meta = STATUS_META[s];
+    const active = (pendingStatus || c.status) === s;
+    const style = active
+      ? `background:${meta.color};color:#fff;border:1px solid ${meta.color}`
+      : `background:#fff;color:${meta.color};border:1px solid ${meta.color}`;
+    return `<button class="status-btn" data-status="${esc(s)}" style="${style}">${esc(s)}</button>`;
+  }).join('');
+
+  const schedulerHTML = (showScheduler && pendingStatus==="Requires HOD Meeting") ? `
+    <div class="scheduler">
+      <div class="scheduler-note">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Choose a meeting slot before confirming
+      </div>
+      <div class="slot-grid">
+        ${Object.entries(SLOTS).map(([day, times]) => `
+          <div>
+            <div class="slot-day">${day}</div>
+            ${times.map(t => {
+              const isChosen = chosenSlot && chosenSlot.day===day && chosenSlot.time===t;
+              return `<button class="slot-btn ${isChosen?'chosen':''}" data-day="${day}" data-time="${t}">${t}</button>`;
+            }).join('')}
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const confirmLabel = (pendingStatus==="Requires HOD Meeting" && !chosenSlot) ? "Continue to scheduling" : "Confirm status update";
+
+  modal.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">Complaint</div>
+        <h2>${esc(c.id)}</h2>
+      </div>
+      <button class="close-btn" id="closeBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-grid">
+        ${fields.map(([label,val]) => `
+          <div>
+            <div class="field-label">${label}</div>
+            <div class="field-value">${esc(val)}</div>
+          </div>`).join('')}
+      </div>
+
+      <div>
+        <div class="complaint-type">${esc(c.type)}</div>
+        <p class="complaint-desc">${esc(c.description)}</p>
+      </div>
+
+      ${evidenceHTML}
+
+      <div>
+        <div class="section-label">Timeline</div>
+        ${timelineHTML(c.history)}
+      </div>
+
+      ${appointmentHTML}
+
+      <div>
+        <div class="section-label">Update status</div>
+        <div class="status-options">${statusOptionsHTML}</div>
+        ${schedulerHTML}
+        <button class="confirm-btn" id="confirmBtn" ${!pendingStatus?'disabled':''}>
+          ${confirmLabel}
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('closeBtn').addEventListener('click', closeModal);
+
+  modal.querySelectorAll('.status-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pendingStatus = btn.getAttribute('data-status');
+      showScheduler = false;
+      chosenSlot = null;
+      renderModal();
+    });
+  });
+
+  modal.querySelectorAll('.slot-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      chosenSlot = { day: btn.getAttribute('data-day'), time: btn.getAttribute('data-time') };
+      renderModal();
+    });
+  });
+
+  const confirmBtn = document.getElementById('confirmBtn');
+  if(confirmBtn){
+    confirmBtn.addEventListener('click', applyStatus);
+  }
+}
+
+function applyStatus(){
+  const c = complaints.find(x => x.id===selectedId);
+  if(!c || !pendingStatus) return;
+
+  if(pendingStatus==="Requires HOD Meeting" && !chosenSlot){
+    showScheduler = true;
+    renderModal();
+    return;
+  }
+
+  if(pendingStatus==="Requires HOD Meeting" && chosenSlot){
+    c.appointment = { date: `${chosenSlot.day} (12 Aug 2026)`, time: chosenSlot.time, location: "HOD Office" };
+  }
+
+  c.status = pendingStatus;
+  c.history.push({ status: pendingStatus, time: "Today, just now", by: "Dr. Nakato" });
+
+  pendingStatus = null;
+  showScheduler = false;
+  chosenSlot = null;
+
+  renderModal();
+  renderStats();
+  renderTable();
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  query = e.target.value;
+  renderTable();
+});
+document.getElementById('filterSelect').addEventListener('change', (e) => {
+  filterVal = e.target.value;
+  renderTable();
+});
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if(e.target.id==='overlay') closeModal();
+});
+
+renderFilterOptions();
+renderStats();
+renderTable();
+
+// Mobile nav toggle (mirrors complaints.js behavior for the shared header)
+const mobileBtn = document.getElementById('mobileMenuBtn');
+const mobileNav = document.getElementById('mobileNav');
+if(mobileBtn && mobileNav){
+  mobileBtn.addEventListener('click', () => {
+    const isOpen = mobileNav.classList.toggle('open');
+    mobileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+}
+</script>
+</body>
+</html>

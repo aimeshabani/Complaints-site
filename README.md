@@ -9,7 +9,7 @@
 
 ## ❗ The Problem
 
-When a student finds a problem with their academic results — a missing mark, a wrong grade, a course that never appears on their transcript — the process to get it fixed is slow and frustrating:
+When a student find a problem with their academic results — a missing mark, a wrong grade, a course that never appears on their transcript — the process to get it fixed is slow and frustrating:
 
 - Students have to move **physically from office to office** to find whoever is responsible.
 - There is **no way to track** where a complaint currently stands.
@@ -32,7 +32,7 @@ Student → Submit complaint → Department/HOD reviews → Status updated → S
 - They can **track that ID at any time** to see a live status and a visual timeline — no login required, and without exposing personal details publicly.
 - The **HOD gets a centralized dashboard** to review every complaint, change its status, and schedule a meeting with the student directly from the same screen.
 
-> Submit. Track. Resolve.
+> Submit. Trak. Resolve.
 
 ---
 
@@ -49,7 +49,7 @@ Student → Submit complaint → Department/HOD reviews → Status updated → S
   - Detail view: student & academic info, complaint description, evidence, full status timeline
   - Status management: Under Review → Requires HOD Meeting / Requires Department Action → Resolved / Rejected
   - **Appointment scheduling** — selecting "Requires HOD Meeting" opens available slots for the student to book
-- **Privacy by design** — the public tracking page never reveals phone, email, or uploaded evidence
+- **Privacy by design** — the public traking page never reveals phone, email, or uploaded evidence
 
 ---
 
@@ -164,7 +164,7 @@ Appointment
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Geting Started
 
 No build step or backend required — every page is static HTML/CSS/JS.
 
@@ -216,7 +216,7 @@ Then visit `http://localhost:8000`.
 
 ## 🤝 Contributing
 
-Issues and pull requests are welcome. For larger changes, please open an issue first to discuss what you'd like to change.
+Issues and pull requests are welcoe. For larger changes, please open an issue first to discuss what you'd like to change.
 
 1. Fork the repo
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -228,11 +228,10 @@ Issues and pull requests are welcome. For larger changes, please open an issue f
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
+Distributed under the MIT License. 
 ---
 
-## 👥 Team
+## 👥 Teamm
 
 **Supervisor:** Sana Abbas
 

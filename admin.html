@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Administrator Dashboard | ComplaintSite</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <div class="logo small">CS</div>
+
+        <span> ComplaintSite </span>
+      </div>
+
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </nav>
+
+    <main class="dashboard">
+      <section class="dashboard-welcome">
+        <span class="eyebrow"> ADMINISTRATOR DASHBOARD </span>
+
+        <h1>Welcome back 👋</h1>
+
+        <p>Manage student result complaints and communicate with students.</p>
+      </section>
+
+      <section class="dashboard-grid">
+        <!-- COMPLAINTS -->
+
+        <div class="dashboard-card">
+          <div class="dashboard-icon">📋</div>
+
+          <h2>Complaints</h2>
+
+          <p>View all student complaints submitted to your department.</p>
+
+          <button class="primary-btn"  onclick="window.location.href='hod-dashboard.html'">View Complaints</button>
+        </div>
+
+        <!-- UNDER REVIEW -->
+
+        <div class="dashboard-card">
+          <div class="dashboard-icon">🔎</div>
+
+          <h2>Under Review</h2>
+
+          <p>View complaints that are currently being investigated.</p>
+
+          <button class="secondary-btn" onclick="window.location.href='forms(moise).html#track'">View Cases</button>
+        </div>
+
+        <!-- MEETINGS -->
+
+        <div class="dashboard-card">
+          <div class="dashboard-icon">📅</div>
+
+          <h2>Schedule Meetings</h2>
+
+          <p>Schedule physical meetings with students when necessary.</p>
+
+          <button class="secondary-btn">Manage Meetings</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

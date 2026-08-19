@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Complaint</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eef4ff;
+      border-radius: 6px;
+      display: none; /* hidden until complaint is tracked */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Track Complaint</h2>
+    <form onsubmit="trackComplaint(event)">
+      <label for="complaintId">Enter Complaint ID:</label>
+      <input type="text" id="complaintId" placeholder="e.g. CMP12345" required>
+      <button type="submit" class="btn">Track</button>
+    </form>
+
+    <div id="result" class="result">
+      <p><strong>Status:</strong> Pending review</p>
+      <p><strong>Last Updated:</strong> 18 Aug 2026</p>
+    </div>
+  </div>
+
+  <script>
+    function trackComplaint(event) {
+      event.preventDefault();
+      document.getElementById('result').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

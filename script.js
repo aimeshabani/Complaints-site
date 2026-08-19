@@ -77,7 +77,7 @@ if (signupForm) {
     // SEND USER TO LOGIN
 
     setTimeout(() => {
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }, 1000);
   });
 }
@@ -168,6 +168,6 @@ if (logoutBtn) {
 
     localStorage.removeItem("resultResolveRole");
 
-    window.location.href = "login.html";
+    window.location.href = "index.html";
   });
 }

@@ -9,7 +9,7 @@
 
 ## ❗ The Problem
 
-When a student find a problem with their academic results — a missing mark, a wrong grade, a course that never appears on their transcript — the process to get it fixed is slow and frustrating:
+When a student finds a problem with their academic results — a missing mark, a wrong grade, a course that never appears on their transcript — the process to get it fixed is slow and frustrating:
 
 - Students have to move **physically from office to office** to find whoever is responsible.
 - There is **no way to track** where a complaint currently stands.

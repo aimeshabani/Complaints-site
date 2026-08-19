@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login | ComplaintSite</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <main class="auth-page">
+      <!-- LEFT SIDE -->
+      <section class="auth-intro">
+        <div class="logo">CS</div>
+
+        <h1>ComplaintSite</h1>
+
+        <p>Student Results Complaint & Tracking System</p>
+      </section>
+
+      <!-- LOGIN CARD -->
+      <section class="auth-card">
+        <div class="form-heading">
+          <h2>Welcome back</h2>
+
+          <p>Login to access your ComplaintSite account.</p>
+        </div>
+
+        <form id="loginForm">
+          <!-- ROLE -->
+          <label for="loginRole"> Login as </label>
+
+          <select id="loginRole" required>
+            <option value="">Select account type</option>
+
+            <option value="student">Student</option>
+
+            <option value="administrator">Administrator</option>
+          </select>
+
+          <!-- EMAIL -->
+          <label for="loginEmail"> Email </label>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter your email"
+            required
+          />
+
+          <!-- PASSWORD -->
+          <label for="loginPassword"> Password </label>
+
+          <div class="password-container">
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              required
+            />
+
+            <button
+              type="button"
+              class="show-password"
+              data-target="loginPassword"
+            >
+              Show
+            </button>
+          </div>
+
+          <button type="submit" class="primary-btn">Login</button>
+
+          <p id="loginMessage" class="message"></p>
+        </form>
+
+        <!-- SIGN UP LINK -->
+        <div class="signup-link">
+          <p>
+            Don't have an account?
+            <a href="signup.html"> Sign up </a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

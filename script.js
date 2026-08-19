@@ -77,7 +77,7 @@ if (signupForm) {
     // SEND USER TO LOGIN
 
     setTimeout(() => {
-      window.location.href = "index.html";
+      window.location.href = "admin.html";
     }, 1000);
   });
 }

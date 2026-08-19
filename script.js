@@ -139,7 +139,7 @@ if (loginForm) {
     // GO TO CORRECT PAGE
 
     if (role === "student") {
-      window.location.href = "student-dashboard.html";
+      window.location.href = "admin.html";
     }
 
     if (role === "administrator") {

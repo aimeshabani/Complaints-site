@@ -77,7 +77,7 @@ if (signupForm) {
     // SEND USER TO LOGIN
 
     setTimeout(() => {
-      window.location.href = "login.html";
+      window.location.href = "student.html";
     }, 1000);
   });
 }
@@ -143,7 +143,7 @@ if (loginForm) {
     }
 
     if (role === "administrator") {
-      window.location.href = "admin.html";
+      window.location.href = "hod-dashboard.html";
     }
   });
 }
@@ -168,6 +168,6 @@ if (logoutBtn) {
 
     localStorage.removeItem("resultResolveRole");
 
-    window.location.href = "login.html";
+    window.location.href = "index.html";
   });
 }

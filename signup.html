@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Sign Up | ComplaintSite</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <main class="auth-page">
+      <!-- LEFT SIDE -->
+
+      <section class="auth-intro">
+        <div class="logo">CS</div>
+
+        <h1>ComplaintSite</h1>
+
+        <p>
+          Create your account and start managing your result complaints easily.
+        </p>
+      </section>
+
+      <!-- SIGN UP CARD -->
+
+      <section class="auth-card">
+        <div class="form-heading">
+          <h2>Create an account</h2>
+
+          <p>Fill in your details to get started.</p>
+        </div>
+
+        <form id="signupForm">
+          <!-- USERNAME -->
+
+          <label for="signupUsername"> Username </label>
+
+          <input
+            type="text"
+            id="signupUsername"
+            placeholder="Enter your username"
+            required
+          />
+
+          <!-- EMAIL -->
+
+          <label for="signupEmail"> Email </label>
+
+          <input
+            type="email"
+            id="signupEmail"
+            placeholder="Enter your email"
+            required
+          />
+
+          <!-- PASSWORD -->
+
+          <label for="signupPassword"> Password </label>
+
+          <div class="password-container">
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Create a password"
+              minlength="6"
+              required
+            />
+
+            <button
+              type="button"
+              class="show-password"
+              data-target="signupPassword"
+            >
+              Show
+            </button>
+          </div>
+
+          <!-- CONFIRM PASSWORD -->
+
+          <label for="confirmPassword"> Confirm Password </label>
+
+          <div class="password-container">
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Enter your password again"
+              minlength="6"
+              required
+            />
+
+            <button
+              type="button"
+              class="show-password"
+              data-target="confirmPassword"
+            >
+              Show
+            </button>
+          </div>
+
+          <button type="submit" class="primary-btn">Create Account</button>
+
+          <p id="signupMessage" class="message"></p>
+        </form>
+
+        <!-- BACK TO LOGIN -->
+
+        <div class="signup-link">
+          <p>
+            Already have an account?
+            <a href="index.html"> Login </a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
